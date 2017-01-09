@@ -1,0 +1,32 @@
+{
+  "name": "osfe-bower",
+  "description": "general assets for front-end dev.",
+  "main": [
+    ""
+  ],
+  "moduleType": [],
+  "authors": [
+    "jmf"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/muskiii/osfe.git",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {},
+  "_release": "a241a44396",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "a241a44396547738baa732fcd84fe9a4bfe1fe4d"
+  },
+  "_source": "git://github.com/muskiii/osfe.git",
+  "_target": "*",
+  "_originalSource": "osfe-bower",
+  "_direct": true
+}

@@ -1,0 +1,124 @@
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <ul class="list-inline">
+                <li><a href="/#/Admission">Admision</a></li>
+                <li><a href="/#/MedicalCare">Atencion Medica</a></li>
+                <li><a href="/#/AddProfesional">Agregar Profesional</a></li>   
+                <li><a href="/#/Reports">Reportes</a></li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <!--<div class="new-rotulo-container-container">-->     
+
+            <form class="form-horizontal" name="admissionForm" novalidate>
+                <div id="Admission">
+                    <div class="well"> 
+                        <div class="form-group">                                  
+                            <div class="col-md-3">      
+                                <label>Nº Afiliado</label>
+                                <input class="form-control" type="text" name="nroAfiliado" ng-model="admission.afiliadoNumero"  placeholder="Nº Afiliado" ng-minlength=12 ng-maxlength=12   ng-enter="keyEnterNroAfiliado()" only-Numbers autocomplete="off"  required>                                                             
+                                <div class="help-block" ng-show="admissionForm.nroAfiliado.$invalid">                                    
+                                    <small class="help-block" ng-show="admissionForm.nroAfiliado.$error.required">
+                                        Escriba DNI y presione ENTER.
+                                    </small>                                   
+                                    <small class="help-block" ng-show="admissionForm.nroAfiliado.length != 12">
+                                        11 Caracteres.
+                                    </small>
+                                    <small class="help-block" ng-show="admissionForm.nroAfiliado.$error.maxlength">
+                                        Demasiado Largo
+                                    </small>
+                                </div>                                 
+                            </div>    
+                            <div class="col-md-3">            
+                                <label>Nº DNI</label>
+                                <input class="form-control" type="number" name="dni" ng-model="admission.afiliadoDni"  placeholder="Nº DNI" ng-minlength=5 ng-maxlength=8   ng-enter="keyEnterDni()" autocomplete="off" required>                             
+                                <div class="help-block" ng-show="admissionForm.dni.$invalid">                                    
+                                    <small class="help-block" ng-show="admissionForm.dni.$error.required">
+                                        Escriba DNI y presione ENTER.
+                                    </small>                                   
+                                    <small class="help-block" ng-show="admissionForm.dni.$error.minlength">
+                                        Minimo 5 Caracteres
+                                    </small>
+                                    <small class="help-block" ng-show="admissionForm.dni.$error.maxlength">
+                                        maximo 8 Caracteres
+                                    </small>
+                                </div>             
+                            </div> 
+                            <div class="col-md-3">                         
+                                <label class="col-md-3">Afiliado</label>
+                                <input class="form-control" name="nombreCompleto" ng-model="admission1.nombreCompleto" placeholder="Nombre" autocomplete="off" ng-minlength=4 ng-maxlength=150  readonly="readonly" required>                            
+                                <div class="help-block" ng-show="admissionForm.nombreCompleto.$invalid">                                    
+                                    <small class="help-block" ng-show="admissionForm.nombreCompleto.$error.required">
+                                        Escriba DNI o  numero de Afiliado y presione ENTER.
+                                    </small>                
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">                                 
+                            <div class="col-md-3">   
+                                <label>Especialidad</label>     
+                                <select name="tipoEspecialidad" class="form-control" 
+                                        ng-model="admission.idEspecialidad" 
+                                        ng-options="tipoespecialidad.descripcion for tipoespecialidad in tipoEspecialidades | orderBy:'descripcion'" >                                         
+                                    <option value="" selected disabled>Especialidad</option>
+                                </select>           
+                                <span class="help-block" ng-show="admissionForm.tipoEspecialidad.$pristine || admissionForm.tipoEspecialidad.$invalid">
+                                    Seleccione una opcion.
+                                </span>                
+                                <!--                                </div>-->
+                            </div>                                
+                            <div class="col-md-3">    
+                                <label>Profesional</label>  
+                                <select name="tipoProfesional" class="form-control" ng-model="admission.idProfesional" 
+                                        ng-options="tipoprofesional.nombreCompleto for tipoprofesional in tipoProfesionales | orderBy:'nombreCompleto'" > 
+                                    <option value="" selected disabled>Profesional</option>
+                                </select>
+                                <span class="help-block" ng-show="admissionForm.tipoProfesional.$pristine || admissionForm.tipoProfesional.$invalid">
+                                    Seleccione una opcion.
+                                </span>    
+                            </div>   
+                            <div class="col-md-3"> 
+                                <label>Linea</label>   
+                                <select name="tipoLinea" class="form-control" ng-model="admission.idLinea" 
+                                        ng-options="tipolinea.id as tipolinea.descripcion for tipolinea in tipoLineas | orderBy:'descripcion'" > 
+                                    <option value="" selected disabled>Linea</option>
+                                </select>
+                                <span class="help-block" ng-show="admissionForm.tipoLinea.$pristine || admissionForm.tipoLinea.$invalid">
+                                    Seleccione una opcion.
+                                </span>  
+                            </div>   
+                            <div class="col-md-3">  
+                                <label></label>
+                                <button class="btn btn-default"  type="submit" ng-disabled="(admissionForm.tipoEspecialidad.$pristine) || (admissionForm.tipoProfesional.$pristine) || (admissionForm.tipoLinea.$pristine) || admissionForm.$invalid" ng-click="SaveAdmision()">Ingresar</button>
+                                <!--<button class="btn btn-default"  type="submit" ng-click="SaveAdmision()">Ingresar</button>-->
+
+                            </div>
+                        </div>
+                    </div> 
+
+                    <table class="table table-striped">  
+                        <thead>
+                            <tr>
+                                <th style="min-width: 80px;">Afiliado</th>
+                                <th style="min-width: 80px;">Profesional</th>
+                                <th style="min-width: 80px;">Especialidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-model="grid" ng-repeat="grid in gridAdmission">
+                                <td>{{ grid.afiliadoNombre + " " + grid.afiliadoApellido}}</td>                                                                
+                                <td>{{ grid.nombreProfesional}}</td> 
+                                <td>{{ grid.especialidad}}</td> 
+                            </tr>
+                        </tbody>
+                    </table>  
+
+                </div>
+            </form>
+        </div>  
+    </div> 
+</div>
+
+

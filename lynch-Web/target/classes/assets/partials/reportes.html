@@ -1,0 +1,292 @@
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading"><ul class="list-inline">
+                <li><a href="/#/Admission">Admision</a></li>
+                <li><a href="/#/MedicalCare">Atencion Medica</a></li>
+                <li><a href="/#/AddProfesional">Agregar Profesional</a></li>   
+                <li><a href="/#/Reports">Reportes</a></li>
+            </ul></div>
+        <div class="panel-body">
+            <div class="consulta" >
+                <div class="well">                    
+                    <div class="row">
+                        <!--<div class="form-group">-->
+                        <div class="col-md-6">
+                            <h4>Tipo Consulta</h4>
+                            <div class="btn-group form-inline">
+                                <div class="form-group" ng-repeat="consulta in getConsultas()">                                    
+                                    <label class="control-label" style="margin-right: 7px">
+                                        <input type="radio" ng-model="cell.consulta" name="consultaOptions" value="{{consulta.name}}" ng-change="cleanGrids()">
+                                        {{consulta.name}}</label>                                   
+                                </div>
+                            </div>
+                            <hr />
+                        </div> 
+                        <!--</div>-->  
+                    </div>
+                </div>                
+                <div class="row">
+                    <div class="col-md-12">
+                        <!--<div class="form-group">-->
+                        <div ng-switch  on="cell.consulta">   
+
+                            <div class="animate-switch form-group" ng-switch-when="Afiliado">                                 
+                                <form role="form" ng-model="reportFormModel" name = "reportForm" class="form-horizontal"  novalidate>
+
+                                    <div class="well"> 
+                                        <div class="form-group">                                  
+                                            <div class="col-md-3">      
+                                                <label class="control-label">Nº Afiliado</label>
+                                                <input class="form-control " type="text" name="nroAfiliado" ng-model="reporte.afiliadoNumero"  placeholder="Nº Afiliado" ng-minlength=1 ng-maxlength=12   ng-enter="keyEnterNroAfiliado()" only-Numbers required>                             
+                                                <div class="error" ng-show="reportForm.nroAfiliado.$invalid">  
+                                                    <small class="error" ng-show="reportForm.nroAfiliado.minlength">
+                                                        11 Caracteres
+                                                    </small>                                                       
+                                                </div>
+                                                <small class="error" ng-show="reportForm.nroAfiliado.$error.maxlength">
+                                                    maximo 11 Caracteres
+                                                </small>
+                                            </div>
+                                            <div class="col-md-3">            
+                                                <label class="control-label">Nº DNI</label>
+                                                <input class="form-control " type="number" name="dni" ng-model="reporte.afiliadoDni"  placeholder="Nº DNI" ng-minlength=1 ng-maxlength=8   ng-enter="keyEnterDni()" >                             
+                                                <div class="error" ng-show="reportForm.dni.$invalid">  
+                                                    <small class="error" ng-show="reportForm.dni.$error.minlength">
+                                                        Minimo 5 caracteres
+                                                    </small>
+                                                    <small class="error" ng-show="reportForm.dni.$error.maxlength">
+                                                        maximo 8 caracteres
+                                                    </small>
+                                                </div>
+                                            </div> 
+                                            <div class="col-md-3">                         
+                                                <label class="control-label">Afiliado</label>
+                                                <input class="form-control " name="nombreCompleto" ng-model="reporte.nombreCompleto" placeholder="Afiliado" autocomplete="off" ng-minlength=4 ng-maxlength=150  readonly="readonly">                            
+                                                <div class="error" ng-show="reportForm.nombreCompleto.$invalid">                                    
+                                                    <small class="error" ng-show="reportForm.nombreCompleto.$error.required">
+                                                        Escriba DNI o  numero de Afiliado y precione ENTER.
+                                                    </small>                
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3" style="margin-top: 25px">  
+                                                <!-- botones Afiliado-->  
+                                                <button class="btn btn-default"  type="submit" ng-disabled="reportForm.$invalid" ng-click="FillGrid1()">Buscar</button>
+                                                <button class="btn btn-default"  type="submit" ng-disabled="reportForm.$invalid || !reportForm.afilGrid.$pristine" ng-click="ExportGrid1()">Exportar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--FIN botones Afiliado-->    
+                                    <!-- Grilla Afiliado-->  
+
+                                    <div class="form-group"> 
+                                        <div class="col-md-12"> 
+                                            <table class="table table-striped">  
+                                                <thead>
+                                                    <tr>
+                                                        <th style="min-width: 80px;">Afiliado</th>
+                                                        <th style="min-width: 40px;">Fecha Atencion</th>
+                                                        <th style="min-width: 80px;">Profesional</th>
+                                                        <th style="min-width: 80px;">Especialidad</th>
+                                                        <th style="min-width: 80px;">Diagnostico</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-model="grid" name="afilGrid" ng-repeat="grid in gridReporte1">
+                                                        <td>{{ grid.afiliadoNombre + " " + grid.afiliadoApellido}}</td>                                                                
+                                                        <td>{{ grid.fecha}}</td> 
+                                                        <td>{{ grid.descripcionProfesional}}</td> 
+                                                        <td>{{ grid.descripcionEspecialidad}}</td> 
+                                                        <td>{{ grid.descripcionCIE10}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>  
+                                        </div>  
+                                        <!-- FIN grilla Afiliado-->  
+                                    </div>
+                                </form> 
+                            </div>
+                            <!-- FIN Switch Afiliado-->    
+                            <!--  Fecha Atencion-->    
+                            <div class="animate-switch form-group" ng-switch-when="Fecha"> 
+                                <form role="form" ng-model="reportFormModel2" class="form-horizontal" name="reportForm2" novalidate>
+                                    <div class="well"> 
+                                        <div class="form-group">                          
+                                            <div class="col-md-3"> 
+                                                <label>Fecha Desde</label>
+                                                <input type="date" id="reporte.fechaDesde" name="campofecha1" ng-model="reporte.fechaDesde" class="form-control"  placeholder="Fecha Desde" min="2015-01-01" required>        
+                                                <div class="error2" 
+                                                     ng-show="reportForm2.campofecha1.$error.required">
+                                                    <small class="error2">
+                                                        Campo Requerido.
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3"> 
+                                                <label>Fecha Hasta</label>
+                                                <input type="date" id="reporte.fechaHasta" name="campofecha2" ng-model="reporte.fechaHasta" class="form-control"  placeholder="Fecha Hasta" max="2030-12-31" required>                                                       
+                                                <div class="error2" 
+                                                     ng-show="reportForm2.campofecha2.$error.required">
+                                                    <small class="error2">
+                                                        Campo Requerido.
+                                                    </small>
+                                                </div>    
+                                            </div>                                         
+                                            <!-- botones Fecha Atencion--> 
+                                            <div class="col-md-3" style="margin-top: 25px">  
+                                                <button class="btn btn-default"  type="submit" ng-disabled="reportForm2.$invalid || reporte.fechaHasta < reporte.fechaDesde" ng-click="FillGrid4()">Buscar</button>                                               
+                                                <button class="btn btn-default"  type="submit" ng-disabled="reportForm2.$invalid || !reportForm2.fechaGrid.$pristine" ng-click="ExportGrid4()">Exportar</button>
+                                            </div> 
+
+                                        </div>
+                                    </div>
+                                    <!--FIN botones Fecha Atencion-->    
+                                    <!-- Grilla Fecha Atencion-->    
+                                    <div class="col-md-12">
+                                        <table class="table">  
+                                            <thead>
+                                                <tr>
+                                                    <th style="min-width: 80px;">Afiliado</th>
+                                                    <th style="min-width: 40px;">Fecha Atencion</th>
+                                                    <th style="min-width: 80px;">Profesional</th>
+                                                    <th style="min-width: 80px;">Especialidad</th>
+                                                    <th style="min-width: 80px;">Diagnostico</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-model="grid" name="fechaGrid" ng-repeat="grid in gridReporte4">
+                                                    <td>{{ grid.afiliadoNombre + " " + grid.afiliadoApellido}}</td>                                                                
+                                                    <td>{{ grid.fecha}}</td> 
+                                                    <td>{{ grid.descripcionProfesional}}</td> 
+                                                    <td>{{ grid.descripcionEspecialidad}}</td> 
+                                                    <td>{{ grid.descripcionCIE10}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>  
+                                    </div>   
+                                    <!-- FIN grilla Fecha Atencion-->    
+                                </form>
+                                <!--FIN FORM-->
+                            </div>    
+                            <!-- Switch  Profesional-->  
+                            <div class="animate-switch form-group" ng-switch-when="Profesional">
+                                <form role="form" ng-model="reportFormModel3" name="reportForm3" class="form-horizontal" novalidate>
+                                    <div class="well"> 
+                                        <div class="form-group"> 
+                                            <div class="col-md-3">    
+                                                <label>Profesional</label>  
+                                                <select name="tipoProfesional" class="form-control" ng-model="reporte.idProfesional" 
+                                                        ng-options='tipoprofesional.id as tipoprofesional.nombreCompleto for tipoprofesional in tipoProfesionales' > 
+                                                    <option value="-1" selected disabled>Profesional</option>
+                                                </select>
+                                                <div class="error2"  ng-show="reportForm3.tipoProfesional.$error.required">
+                                                    <small class="error2">
+                                                        Campo Requerido.
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <!-- botones Profesional-->    
+                                            <div class="col-md-3" style="margin-top: 25px"> 
+                                                <button class="btn btn-default"  type="submit" ng-disabled="reportForm3.$invalid" ng-click="FillGrid2()">Buscar</button>                                       
+                                                <button class="btn btn-default"  type="submit" ng-disabled="reportForm3.$invalid || !reportForm3.profGrid.$pristine" ng-click="ExportGrid2()">Exportar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--FIN botones Profesional-->    
+                                    <!-- Grilla Profesional-->    
+                                    <div class="form-group"> 
+                                        <div class="col-md-12"> 
+                                            <table class="table table-striped">  
+                                                <thead>
+                                                    <tr>
+                                                        <th style="min-width: 80px;">Afiliado</th>
+                                                        <th style="min-width: 80px;">Dni</th>
+                                                        <th style="min-width: 40px;">Fecha Atencion</th>
+                                                        <th style="min-width: 80px;">Diagnostico</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-model="grid" name="profGrid" ng-repeat="grid in gridReporte2">
+                                                        <td>{{ grid.afiliadoNombre + " " + grid.afiliadoApellido}}</td>                                                                
+                                                        <td>{{ grid.afiliadoDni}}</td> 
+                                                        <td>{{ grid.fecha}}</td>
+                                                        <td>{{ grid.descripcionCIE10}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>   
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+
+                            <!-- FIN Switch Profesional--> 
+                            <!--  Switch Especialidad--> 
+
+                            <div class="animate-switch form-group" ng-switch-when="Especialidad">   
+                                <form role="form" ng-model="reportForm" name="reportForm4" class="form-horizontal" novalidate>
+                                    <div class="well"> 
+                                        <div class="form-group"> 
+                                            <div class="col-md-3">   
+                                                <label>Especialidad</label>     
+                                                <select name="tipoEspecialidad" class="form-control" ng-model="reporte.idEspecialidad" 
+                                                        ng-options='tipoespecialidad.id as tipoespecialidad.descripcion for tipoespecialidad in tipoEspecialidades' 
+                                                        required> 
+                                                    <option value="-1" selected disabled>Especialidad</option>
+                                                </select>
+                                                <div class="error2"  ng-show="reportForm4.tipoEspecialidad.$error.required">
+                                                    <small class="error2">
+                                                        Campo Requerido.
+                                                    </small>
+                                                </div>
+                                            </div> 
+
+                                            <!-- botones Especialidad-->    
+
+                                            <div class="col-md-3" style="margin-top: 25px"> 
+                                                <button class="btn btn-default"  type="submit" ng-disabled="reportForm4.$invalid" ng-click="FillGrid3()">Buscar</button>                                          
+                                                <button class="btn btn-default"  type="submit" ng-disabled="reportForm4.$invalid || !reportForm4.espGrid.$pristine" ng-click="ExportGrid3()">Exportar</button>
+                                            </div> 
+
+                                        </div>
+                                    </div>
+                                    <!--FIN botones Especialidad-->    
+                                    <!-- Grilla Especialidad-->    
+                                    <div class="form-group"> 
+                                        <div class="col-md-12"> 
+                                            <table class="table table-striped">  
+                                                <thead>
+                                                    <tr>
+                                                        <th style="min-width: 80px;">Afiliado</th>
+                                                        <th style="min-width: 80px;">Dni</th>
+                                                        <th style="min-width: 40px;">Fecha Atencion</th>
+                                                        <th style="min-width: 80px;">Diagnostico</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-model="grid" name="espGrid" ng-repeat="grid in gridReporte3">
+                                                        <td>{{ grid.afiliadoNombre + " " + grid.afiliadoApellido}}</td>                                                                
+                                                        <td>{{ grid.afiliadoDni}}</td> 
+                                                        <td>{{ grid.fecha}}</td>
+                                                        <td>{{ grid.descripcionCIE10}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table> 
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- FIN Switch Especialidad--> 
+
+                            <!--</div>-->  
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+

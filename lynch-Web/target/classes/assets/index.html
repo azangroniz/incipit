@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html ng-app="RamenApp">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Osfe</title>
+        <!--<link href="logo.png" rel="shortcut icon">-->
+        <!--<link href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">-->
+        <!--<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">-->
+        <!--<link href="//cdn.jsdelivr.net/animatecss/3.2.0/animate.css" rel="stylesheet">-->        
+        <!--<link href="assets/stylesheets/bootstrap.min.css" rel="stylesheet-->
+        <!--<link href="assets/stylesheets/angular-toastr.css" rel="stylesheet">-->  
+        <!--<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet"> -->
+        <!--<link href="//fonts.googleapis.com/css?family=Roboto|Montserrat:400,700|Open+Sans:400,300,600" rel="stylesheet">-->
+
+        <link href="assets/bower_components/osfe-bower/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">         
+        <link href="assets/bower_components/osfe-bower/Ionicons/css/ionicons.min.css" rel="stylesheet">   
+        <link href="assets/bower_components/osfe-bower/animate/animate.css" rel="stylesheet">         
+        <link href="assets/bower_components/osfe-bower/font-awesome/css/font-awesome.min.css" rel="stylesheet"> 
+        <link href="assets/bower_components/osfe-bower/angular-toastr/dist/angular-toastr.min.css" rel="stylesheet">
+        <link href="assets/bower_components/osfe-bower/angular-bootstrap/ui-bootstrap-csp.css" rel="stylesheet">
+        <link href="assets/stylesheets/styles.css" rel="stylesheet">
+    </head>
+    <body>     
+        <div ng-controller="NavbarCtrl" class="navbar navbar-default navbar-static-top">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/"><i class="ion-ios7-pulse-strong"></i> Osfe</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="/#/">Home</a></li>
+                <li ng-if="isAuthenticated()"><a href="/#/profile">Profile</a></li>
+            </ul>
+            <ul ng-if="!isAuthenticated()" class="nav navbar-nav pull-right">
+                <li><a href="/#/login">Login</a></li>
+                <!--<li><a href="/#/signup">Sign up</a></li>-->
+            </ul>
+            <ul ng-if="isAuthenticated()" class="nav navbar-nav pull-right">
+                <li><a href="/#/logout">Logout</a></li>
+            </ul>
+        </div>
+
+        <div ui-view>                
+        </div>
+
+
+        <!-- osfe-bower Libraries -->
+
+        <script src="assets/bower_components/osfe-bower/jquery/dist/jquery.min.js"></script>
+        <script src="assets/bower_components/osfe-bower/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="assets/bower_components/osfe-bower/angular/angular.min.js"></script>
+        <script src="assets/bower_components/osfe-bower/file-saver.js/FileSaver.js"></script>        
+        <script src="assets/bower_components/osfe-bower/satellizer/satellizer.js"></script>
+        <script src="assets/bower_components/osfe-bower/bootstrap3-typeahead/bootstrap3-typeahead.min.js"></script>
+        <script src="assets/bower_components/osfe-bower/bootstrap-validator/dist/validator.min.js"></script>
+        <script src="assets/bower_components/osfe-bower/angular-toastr/dist/angular-toastr.min.js"></script>
+        <script src="assets/bower_components/osfe-bower/angular-toastr/dist/angular-toastr.tpls.js"></script>
+        <script src="assets/bower_components/osfe-bower/angular-bootstrap/ui-bootstrap.js"></script>
+        <script src="assets/bower_components/osfe-bower/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+        <!--<script src="/assets/vendor/jquery.js"></script>-->
+        <!--<script src="/assets/vendor/bootstrap.min.js"></script>-->
+        <!--<script src="/assets/vendor/angular.js"></script>-->
+        <script src="/assets/vendor/angular-animate.js"></script>
+        <script src="/assets/vendor/angular-messages.js"></script>
+        <script src="/assets/vendor/angular-resource.js"></script>
+        <script src="/assets/vendor/angular-sanitize.js"></script>
+        <script src="/assets/vendor/angular-ui-router.js"></script>
+        <!--<script src="/assets/vendor/angular-toastr.tpls.js"></script>-->
+        <!--<script src="/assets/vendor/satellizer.js"></script>-->
+        <!--<script src="/assets/vendor/Validator.js"></script>-->
+        <!--<script src="https://rawgithub.com/eligrey/FileSaver.js/master/FileSaver.js" type="text/javascript"></script>-->
+
+
+        <!-- Application Code -->
+        <script src="/assets/app.js"></script>
+        <script src="/assets/directives/passwordStrength.js"></script>
+        <script src="/assets/directives/passwordMatch.js"></script>
+        <script src="/assets/controllers/home.js"></script>
+        <script src="/assets/controllers/login.js"></script>
+        <script src="/assets/controllers/signup.js"></script>
+        <script src="/assets/controllers/logout.js"></script>
+        <script src="/assets/controllers/profile.js"></script>
+        <script src="/assets/controllers/navbar.js"></script>
+        <script src="/assets/services/account.js"></script>
+        <!-- Owner Controllers-->
+        <script src="/assets/controllers/admission-controller.js"></script>
+        <script src="/assets/controllers/medical-care-controller.js"></script>
+        <script src="/assets/controllers/reports-controller.js"></script>
+        <script src="/assets/controllers/profesional-controller.js"></script>
+        <!-- Owner Services-->
+        <script src="/assets/services/tipo-especialidad.js"></script>
+        <script src="/assets/services/tipo-linea.js"></script>
+        <script src="/assets/services/tipo-profesionales.js"></script>
+        <script src="/assets/services/tipo-cie10.js"></script>
+        <script src="/assets/services/tipo-nomenclador.js"></script>
+        <script src="/assets/services/tipo-dsmiv.js"></script>
+        <script src="/assets/services/create-profesional.js"></script>
+        <script src="/assets/services/beneficiarios.js"></script>
+        <script src="/assets/services/admission.js"></script>
+        <script src="/assets/services/vistas.js"></script>
+        <script src="/assets/services/reporte.js"></script>
+        <script src="/assets/services/practica.js"></script>
+        
+        <!-- Owner Directives-->
+        <script src="/assets/directives/ownermodal.js"></script>
+        <script src="/assets/directives/ngEnter.js"></script>
+        <script src="/assets/directives/onlyNumbers.js"></script>
+
+    </body>
+</html>

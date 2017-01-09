@@ -1,0 +1,24 @@
+{
+  "name": "osfe-bower",
+  "version": "0.1.0",
+  "description": "general assets for front-end dev.",
+  "main": [
+    ""
+  ],
+  "moduleType": [],
+  "authors": [
+    "jmf"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/muskiii/osfe.git",
+  "private": false,
+  "ignore": [
+    "**/.*",	
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+  }
+}
