@@ -74,17 +74,17 @@ public class AuthResource {
 	}
 
 	@POST
-	@Path("login")
-	@UnitOfWork
-	public Response login(@Valid final User user, @Context final HttpServletRequest request)
-			throws JOSEException, NamingException, URISyntaxException {
-		Optional<User> foundUser = dao.validateOnlyUser();
-		if (user == null || !foundUser.isPresent()) {
-			return Response.status(Status.UNAUTHORIZED).entity(new ErrorMessage(LOGING_ERROR_MSG)).build();
-		}
-		final Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.get());
-		return Response.ok().entity(token).header("roles", foundUser.get().getRoles().toString()).build();
-	}
+    @Path("login")
+    @UnitOfWork
+    public Response login(@Valid final User user, @Context final HttpServletRequest request)
+            throws JOSEException, NamingException, URISyntaxException {
+        Optional<User> foundUser = dao.findUserByUsernameAndPassword(user.getUniqueName(), user.getPassword());
+        if (user == null || !foundUser.isPresent()) {
+            return Response.status(Status.UNAUTHORIZED).entity(new ErrorMessage(LOGING_ERROR_MSG)).build();
+        }
+        final Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.get());
+        return Response.ok().entity(token).header("roles", foundUser.get().getRoles().toString()).build();
+    }
 
 	@POST
 	@Path("signup")
@@ -113,7 +113,7 @@ public class AuthResource {
 				.queryParam(CODE_KEY, payload.getCode()).request("text/plain").accept(MediaType.TEXT_PLAIN).get();
 
 		Map<String, Object> responseEntity = getResponseEntity(response);
-
+		// Step 1. Exchange authorization code for access token.
 		response = client.target(graphApiUrl).queryParam("access_token", responseEntity.get("access_token"))
 				.queryParam("expires_in", responseEntity.get("expires_in")).request("text/plain").get();
 
@@ -187,7 +187,7 @@ public class AuthResource {
 			throws ParseException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException,
 			SecurityException, JOSEException, NamingException {
 		final String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
-		final Optional<User> foundUser = dao.findByUniqueName();
+		final Optional<User> foundUser = dao.findByUniqueName(subject);
 
 		String provider = unlinkRequest.provider;
 
@@ -265,45 +265,84 @@ public class AuthResource {
 		});
 	}
 
+	//	private Response processUser(final HttpServletRequest request, final Provider provider, final String id,
+	//			final String displayName) throws JOSEException, ParseException {
+	//
+	//		final Optional<User> providerUser = dao.findByProvider(provider, id);
+	////		Optional<User> ldapUser = null;
+	//		// Step 3a. If user is already signed in then link accounts.
+	//		User userToSave;
+	//		if (StringUtils.isNotBlank(request.getHeader(AuthUtils.AUTH_HEADER_KEY))) {
+	//			String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
+	////			ldapUser = OpenLDAP.returnDefaultUser();
+	//
+	//			if (providerUser.isPresent()) {
+	//				return Response.status(Status.CONFLICT)
+	//						.entity(new ErrorMessage(String.format(CONFLICT_MSG, provider.capitalize()))).build();
+	//			}
+	////			if (!ldapUser.isPresent()) {
+	////				return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NOT_FOUND_MSG)).build();
+	////			}
+	//			userToSave = dao.findByUniqueName(displayName).get();
+	//			// userToSave.setUniqueName(ldapUser.get().getUniqueName());
+	//			userToSave.setProviderId(provider, id);
+	//			// userToSave.setEmail(user.get().getEmail());
+	//			if (userToSave.getDisplayName() == null) {
+	//				userToSave.setDisplayName(displayName);
+	//			}
+	//			userToSave = dao.merge(userToSave);
+	//		} else {
+	//			// Step 3b. Create a new user account or return an existing one.
+	//
+	//			// if (user.isPresent()) {
+	//			// userToSave = user.get();
+	//			// } else {
+	//			// userToSave = new User();
+	//			// userToSave = ldapUser.get();
+	//			// userToSave.setUniqueName(ldapUser.get().getUniqueName());
+	//			// userToSave.setProviderId(provider, id);
+	//			// userToSave.setDisplayName(displayName);
+	//			// userToSave = dao.merge(userToSave);
+	//			return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NEED_COMPANY_ACCOUNT_FIRST)).build();
+	//		}
+	//		final Token token = AuthUtils.createToken(request.getRemoteHost(), userToSave);
+	//		return Response.ok().entity(token).build();
+	//	}
+
 	private Response processUser(final HttpServletRequest request, final Provider provider, final String id,
 			final String displayName) throws JOSEException, ParseException {
 
 		final Optional<User> providerUser = dao.findByProvider(provider, id);
-		Optional<User> ldapUser = null;
-		// Step 3a. If user is already signed in then link accounts.
-		User userToSave;
+		User userToSave = null;
+		
+		// Step 3a. If user is already signed in then link accounts.		
 		if (StringUtils.isNotBlank(request.getHeader(AuthUtils.AUTH_HEADER_KEY))) {
 			String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
-			ldapUser = OpenLDAP.returnDefaultUser();
 
 			if (providerUser.isPresent()) {
 				return Response.status(Status.CONFLICT)
 						.entity(new ErrorMessage(String.format(CONFLICT_MSG, provider.capitalize()))).build();
 			}
-			if (!ldapUser.isPresent()) {
-				return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NOT_FOUND_MSG)).build();
-			}
-			userToSave = dao.findByUniqueName().get();
-			// userToSave.setUniqueName(ldapUser.get().getUniqueName());
+			userToSave = dao.findByUniqueName(subject).get();
+			//          userToSave.setUniqueName(ldapUser.get().getUniqueName());
 			userToSave.setProviderId(provider, id);
-			// userToSave.setEmail(user.get().getEmail());
+			//        userToSave.setEmail(user.get().getEmail());
 			if (userToSave.getDisplayName() == null) {
 				userToSave.setDisplayName(displayName);
 			}
 			userToSave = dao.merge(userToSave);
 		} else {
 			// Step 3b. Create a new user account or return an existing one.
-
-			// if (user.isPresent()) {
-			// userToSave = user.get();
-			// } else {
-			// userToSave = new User();
-			// userToSave = ldapUser.get();
-			// userToSave.setUniqueName(ldapUser.get().getUniqueName());
-			// userToSave.setProviderId(provider, id);
-			// userToSave.setDisplayName(displayName);
-			// userToSave = dao.merge(userToSave);
-			return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NEED_COMPANY_ACCOUNT_FIRST)).build();
+			if (!providerUser.isPresent()) {
+				userToSave = new User(displayName);
+				userToSave.setDisplayName(displayName);
+				userToSave.setProviderId(provider, id); 
+				userToSave = dao.merge(userToSave);
+			} else{ 
+				return Response.status(Status.CONFLICT)
+						.entity(new ErrorMessage(String.format(CONFLICT_MSG, provider.capitalize()))).build();
+			}
+			//			return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NEED_COMPANY_ACCOUNT_FIRST)).build();
 		}
 		final Token token = AuthUtils.createToken(request.getRemoteHost(), userToSave);
 		return Response.ok().entity(token).build();

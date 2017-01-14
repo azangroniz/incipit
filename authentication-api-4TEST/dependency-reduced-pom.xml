@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>RamenODB</groupId>
-  <artifactId>RamenAuth</artifactId>
-  <name>RamenAuth</name>
+  <groupId>com.osfe.ramenodb</groupId>
+  <artifactId>authentication-api-4TEST</artifactId>
+  <name>authentication-api-4TEST</name>
   <version>2.0</version>
   <prerequisites>
     <maven>3.0.0</maven>
@@ -109,6 +109,20 @@
       </plugin>
     </plugins>
   </build>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>hamcrest-core</artifactId>
+          <groupId>org.hamcrest</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
   <properties>
     <dropwizard.version>0.8.2</dropwizard.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

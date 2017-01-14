@@ -37,8 +37,8 @@ public class UserResource {
 	@GET
 	@UnitOfWork
 	public Response getUser(@Auth User user, @Context HttpServletRequest request) throws ParseException, JOSEException {
-		Optional<User> foundUser = getAuthUser(user);
-
+		Optional<User> foundUser = getAuthUser(request,user);
+		
 		if (!foundUser.isPresent()) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
@@ -55,17 +55,19 @@ public class UserResource {
 
 	@PUT
 	@UnitOfWork
-	public Response updateUser(@Valid User user) throws ParseException, JOSEException {
-		Optional<User> foundUser = getAuthUser(user);
-
+	public Response updateUser(@Valid User user, @Context HttpServletRequest request) throws ParseException, JOSEException {
+		Optional<User> foundUser = getAuthUser(request,user);
+		
 		if (!foundUser.isPresent()) {
-			return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(AuthResource.NOT_FOUND_MSG)).build();
+			return Response
+					.status(Status.NOT_FOUND)
+					.entity(new ErrorMessage(AuthResource.NOT_FOUND_MSG)).build();
 		}
-
+		
 		User userToUpdate = foundUser.get();
 		userToUpdate.setDisplayName(user.getDisplayName());
 		userToUpdate.setUniqueName(user.getUniqueName());
-		userToUpdate.setEmail(user.getEmail());
+                userToUpdate.setEmail(user.getEmail());
 		dao.merge(userToUpdate);
 
 		return Response.ok().build();
@@ -74,11 +76,11 @@ public class UserResource {
 	/*
 	 * Helper methods
 	 */
-	private Optional<User> getAuthUser(User user) throws ParseException, JOSEException {
-		Optional<User> dBUser = dao.findByUniqueName();
-		user.setEmail(dBUser.get().getEmail());
-		user.setProviderId(User.Provider.FACEBOOK, dBUser.get().getFacebook());
-		return Optional.of(user);
-	}
+	private Optional<User> getAuthUser(HttpServletRequest request, User user) throws ParseException, JOSEException {
+        Optional<User> dBUser = dao.findByUniqueName(user.getUniqueName());
+        user.setEmail(dBUser.get().getEmail());
+        user.setProviderId(User.Provider.FACEBOOK, dBUser.get().getFacebook());
+        return Optional.of(user);
+}
 
 }

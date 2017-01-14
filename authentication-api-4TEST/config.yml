@@ -2,7 +2,7 @@ server:
   type: simple
   connector:
     type: http
-    port: 3001
+    port: 3000
   applicationContextPath: /
     
 # Logging settings.
@@ -23,10 +23,10 @@ database:
   user: root
 
   # the password
-  password: sqlosfe
+  password: toor
 
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/lynch
+  url: jdbc:mysql://localhost:3306/ramendb
 
   # any properties specific to your JDBC driver:
   properties:

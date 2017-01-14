@@ -67,11 +67,19 @@ public class User implements Serializable {
 	@Column(name = "twitter")
 	private String twitter;
 
-	public User(String uniqueName, String displayName) {
+	public User(String uniqueName, String password) {
 		this.uniqueName = uniqueName;
-		this.displayName = displayName;
+		this.password = password;
 		this.Roles = new ArrayList<>();
 	}
+	
+	
+
+	public User(String uniqueName) {
+		this.uniqueName = uniqueName;
+	}
+
+
 
 	public User() {
 		this.Roles = new ArrayList<>();

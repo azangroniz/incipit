@@ -1,7 +1,9 @@
 package com.osfe.ramenodb.authentication.api.db;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.SessionFactory;
 
@@ -20,13 +22,14 @@ public class RepoUser extends GenericRepo<User, Serializable> {
 		super(factory);
 	}
 
-	public Optional<User> findByUniqueName() {
-		// User foundUser = (User) namedQuery("User.findByUniqueName")
-		// .setParameter("uniqueName", uniqueName)
-		// .uniqueResult();
-		Optional<User> foundUser = OpenLDAP.returnDefaultUser();
+	public Optional<User> findByUniqueName(String uniqueName) {
+		 User foundUser = (User) namedQuery("User.findByUniqueName")
+		 .setParameter("uniqueName", uniqueName)
+		 .uniqueResult();
+//		for bypassing the login
+//		Optional<User> foundUser = OpenLDAP.returnDefaultUser();
 
-		return foundUser;
+		return Optional.fromNullable(foundUser);
 	}
 
 	public Optional<User> findByProvider(Provider provider, String providerId) {
@@ -38,21 +41,22 @@ public class RepoUser extends GenericRepo<User, Serializable> {
 	public List<User> findAll() {
 		return list(namedQuery("User.findAll"));
 	}
+	
+	final static Map<Long, User> userTable = new HashMap<>();
 
-	public Optional<User> validateOnlyUser() {
-		// LdapContext ctx = null;
-		// try {
-		// ctx = ActiveDirectory.getConnection(username, password);
-		// if (ctx == null) {
-		// return Optional.absent();
-		// }
-		// Optional<User> user = ActiveDirectory.getUser(username, ctx);
-		// ctx.close();
-		// return user;
-		// } catch (NamingException e) {
-		// ctx.close();
-		// return Optional.absent();
-		// }
-		return OpenLDAP.validateOnlyUser();
+	static {
+		userTable.put(1l, new User("alice", "secret"));
+		userTable.put(2l, new User ("bob", "letMeIn"));
 	}
+
+	public Optional<User> findUserByUsernameAndPassword(final String username, final String password) {
+		for (Map.Entry<Long, User> entry : userTable.entrySet()) {
+			User user = entry.getValue();
+			if (user.getPassword().equals(password) && user.getUniqueName().equals(username)) {
+				return Optional.of(user);
+			}
+		}
+		return Optional.absent();
+	}
+	
 }
