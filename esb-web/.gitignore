@@ -1,0 +1,8 @@
+# Ignore node stuff
+node_modules/
+npm-debug.log
+.idea/
+esb-web.iml
+
+# build
+target/

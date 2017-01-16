@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: Lynch-Web
-Implementation-Version: 1.0
-Built-By: jmfabiano
-Implementation-Vendor-Id: com-osfe-ramenodb
-Build-Jdk: 1.8.0_111
-Created-By: Maven Integration for Eclipse
-
