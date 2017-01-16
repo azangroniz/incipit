@@ -4,7 +4,7 @@ angular.module('RamenApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', '
       .state('home', {
         url: '/',
         controller: 'HomeCtrl',
-        templateUrl: '/assets/partials/home.html'
+        templateUrl: '/assets/modules/main/views/home.html'
       })
       .state('login', {
         url: '/login',
