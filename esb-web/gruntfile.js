@@ -1,10 +1,11 @@
 module.exports = function(grunt){
 	var assets = 'src/main/resources/assets/';
+	var dist = 'src/main/resources/assets/dist';
 	var watchFiles = {
 		serverViews: ['app/views/**/*.*'], 
-		serverJS: ['gruntfile.js', 'server.js', 'config/**/*.js', 'app/**/*.js'],
+		serverJS: ['gruntfile.js'],
 		clientViews: [assets +'/modules/**/views/*.html'],
-		clientJS: [ assets + 'js/*.js', assets +'modules/**/*.js'],
+		clientJS: [ 'modules/**/*.js'],
 		clientCSS: [assets +'css/*css', assets +'modules/**/*.css']
 	};
 	grunt.initConfig({
@@ -48,7 +49,7 @@ module.exports = function(grunt){
 			all: {
 				src: watchFiles.clientJS.concat(watchFiles.serverJS),
 				options: {
-					jshintrc: true
+					jshintrc: false
 				}
 			}
 		},
@@ -57,19 +58,16 @@ module.exports = function(grunt){
 				expand: true,
 				cwd: assets,
 				src: ['modules/**/views/*.html', 'modules/**/img/**'],
-				dest:  assets + 'dist'
+				dest:  dist
 			},				
 			ViewerJS: {
 				expand: true,
 				cwd: assets,
-				src: ['ViewerJS/**'],
-				dest: assets + 'dist'
+				src: [watchFiles.clientJS],
+				dest: dist
 			}
 		},
-		clean: {
-			main: ['public/dist'],
-			app: ['public/dist/application.js']
-		},
+		clean: [dist],
 		express:{
 			all:{
 				options:{
@@ -79,12 +77,32 @@ module.exports = function(grunt){
 					livereload:true
 				}
 			}
+		},
+		includeSource: {
+			options: {
+				basePath:'src/main/resources/assets/js',				
+			},
+			myTarget: {
+				files: {
+					'src/main/resources/assets/dist/index.html': 'src/main/resources/assets/app/index.tpl.html'
+				}
+			}
+		},
+		bowerInstall: {			
+			target: {
+				src: 'src/main/resources/assets/dist/index.html'  ,
+				cwd: 'src/main/resources/assets/',
+			}
 		}
 	});	
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-include-source');
+	grunt.loadNpmTasks('grunt-bower-install');
 	grunt.loadNpmTasks('grunt-express');
-	grunt.registerTask('default',['copy']);
-	grunt.registerTask('server',['express','watch']);
+	grunt.registerTask('build',['clean','copy','includeSource','bowerInstall']);
+	grunt.registerTask('default',['build','express','watch']);
 
 }

@@ -1,0 +1,76 @@
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading"><ul class="list-inline">
+                <li><a href="/#/Admission">Admision</a></li>
+                <li><a href="/#/MedicalCare">Atencion Medica</a></li>
+                <li><a href="/#/AddProfesional">Agregar Profesional</a></li>   
+                <li><a href="/#/Reports">Reportes</a></li>
+            </ul></div>
+        <div class="panel-body">
+            <div class="consulta" >
+                <!--<div class="consulta-container-container">-->        
+                <form role="form" name="userForm" novalidate>
+                    <div class="well">  
+                        <div class="form-horizontal">  
+                            <div class="form-group">                                  
+                                <div class="col-md-6">            
+                                    <label>Matricula</label>
+                                    <input class="form-control" type="number" name="matricula" ng-model="profesional.matricula"  placeholder="Nº Matricula" required>                             
+                                    <div class="error" ng-show="userForm.matricula.$invalid">
+                                        <small class="error" ng-show="userForm.matricula.$error.required">
+                                            Campo Requerido
+                                        </small>                                            
+                                    </div>
+                                </div>
+                                <div class="col-md-3">   
+                                    <input type="checkbox" ng-model="profesional.vigente" name="vigente" ng-checked="true" disabled>&nbsp Vigente
+                                </div>
+                            </div>                            
+                            <div class="form-group">  
+                                <div> 
+                                    <div class="col-md-6">                         
+                                        <label>Apellido y Nombre:</label>
+                                        <input class="form-control" name="nombreCompleto" ng-model="profesional.nombreCompleto" ng-blur="profesional.nombreCompleto=profesional.nombreCompleto.toUpperCase();" placeholder="Apellido y Nombre" autocomplete="off" ng-minlength=4 ng-maxlength=150 required>                            
+                                        <div class="error" ng-show="userForm.nombreCompleto.$invalid">
+                                            <small class="error" ng-show="userForm.nombreCompleto.$error.required">
+                                                Campo Requerido
+                                            </small>                                            
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <div> 
+                                    <div class="col-md-6">   
+                                        <label>Especialidad</label>     
+                                        <select name="tipoEspecialidad" class="form-control" ng-model="profesional.idEspecialidad" 
+                                                ng-options='tipoespecialidad as tipoespecialidad.descripcion for tipoespecialidad in tipoEspecialidades' 
+                                                required> 
+                                            <option value="" selected disabled>Especialidad</option>
+                                        </select>
+                                        <div class="error" ng-show="userForm.tipoEspecialidad.$invalid">
+                                            <small class="error" ng-show="userForm.tipoEspecialidad.$error.required">
+                                                Campo Requerido
+                                            </small>                                            
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <div> 
+                                    <div class="col-md-3">  
+                                        <label></label>
+                                        <button class="btn btn-default"  type="submit" ng-disabled="userForm.$invalid" ng-click="SaveProfesional()">Ingresar</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
