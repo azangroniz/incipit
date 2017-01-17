@@ -1,20 +1,15 @@
 package com.osfe.ramenodb.authentication.api.db;
 
-import static java.util.Objects.requireNonNull;
+import org.hibernate.*;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import static java.util.Objects.requireNonNull;
 
 /**
- *
  * @author Fabiano Jose Maria
  */
 public class GenericRepo<E, PK> {
@@ -23,10 +18,10 @@ public class GenericRepo<E, PK> {
     private final Class<E> entityClass;
 
     @SuppressWarnings("unchecked")
-	public GenericRepo(SessionFactory sessionFactory) {
+    public GenericRepo(SessionFactory sessionFactory) {
         this.sessionFactory = requireNonNull(sessionFactory);
-		this.entityClass = (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass())
-				.getActualTypeArguments()[0];
+        this.entityClass = (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass())
+                .getActualTypeArguments()[0];
     }
 
     public void saveOrUpdate(E object) {
@@ -43,23 +38,17 @@ public class GenericRepo<E, PK> {
         currentSession().persist(requireNonNull(object));
     }
 
-    @SuppressWarnings("unchecked")
-    public E getById(Serializable id) {
-        return (E) currentSession().get(entityClass, requireNonNull(id));
-    }
-
-    @SuppressWarnings("unchecked")
-    public void deleteById(Serializable id) {
-        E toDelete = (E) sessionFactory.getCurrentSession().get(entityClass, requireNonNull(id));
-        currentSession().delete(toDelete);
-    }
-
     public void update(E object) {
         currentSession().update(object);
     }
 
     @SuppressWarnings("unchecked")
-    public List<E> get() {
+    public E get(Serializable id) {
+        return (E) currentSession().get(entityClass, requireNonNull(id));
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<E> getAll() {
         return currentSession().createQuery("from " + entityClass.getCanonicalName()).list();
     }
 
@@ -71,6 +60,12 @@ public class GenericRepo<E, PK> {
         Query query = currentSession().createQuery("from " + entityClass.getName() + " where id in (:ids)");
         query.setParameter("ids", requireNonNull(ids));
         return query.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void deleteById(Serializable id) {
+        E toDelete = (E) sessionFactory.getCurrentSession().get(entityClass, requireNonNull(id));
+        currentSession().delete(toDelete);
     }
 
     protected Criteria criteria() {

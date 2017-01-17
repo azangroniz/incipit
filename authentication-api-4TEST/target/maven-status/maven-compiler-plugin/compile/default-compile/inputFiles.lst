@@ -4,7 +4,6 @@ C:\Users\fabianos\Documents\GitHub\incipit\authentication-api-4TEST\src\main\jav
 C:\Users\fabianos\Documents\GitHub\incipit\authentication-api-4TEST\src\main\java\com\osfe\ramenodb\authentication\api\core\Token.java
 C:\Users\fabianos\Documents\GitHub\incipit\authentication-api-4TEST\src\main\java\com\osfe\ramenodb\authentication\api\auth\SimpleAuthenticator.java
 C:\Users\fabianos\Documents\GitHub\incipit\authentication-api-4TEST\src\main\java\com\osfe\ramenodb\authentication\api\auth\PasswordService.java
-C:\Users\fabianos\Documents\GitHub\incipit\authentication-api-4TEST\src\main\java\com\osfe\ramenodb\authentication\api\core\OpenLDAP.java
 C:\Users\fabianos\Documents\GitHub\incipit\authentication-api-4TEST\src\main\java\com\osfe\ramenodb\authentication\api\core\User.java
 C:\Users\fabianos\Documents\GitHub\incipit\authentication-api-4TEST\src\main\java\com\osfe\ramenodb\authentication\api\resources\AuthResource.java
 C:\Users\fabianos\Documents\GitHub\incipit\authentication-api-4TEST\src\main\java\com\osfe\ramenodb\authentication\api\resources\UserResource.java

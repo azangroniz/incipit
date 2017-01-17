@@ -30,6 +30,7 @@ public final class AuthUtils {
 		return decodeToken(authHeader).getSubject();
 	}
 
+
 	public static ReadOnlyJWTClaimsSet decodeToken(String authHeader) throws ParseException, JOSEException {
 		SignedJWT signedJWT = null;
 		if (authHeader.startsWith("Bearer")) {
@@ -46,13 +47,27 @@ public final class AuthUtils {
 
 	public static Token createToken(String host, User user) throws JOSEException {
 		JWTClaimsSet claim = new JWTClaimsSet();
-		claim.setSubject(user.getUniqueName());
+		claim.setSubject(Long.toString(user.getId()));
 		for (int i = 0; i < user.getRoles().size(); i++) {
-			claim.setClaim("grupo" + i + "", user.getRoles().get(i));
+			claim.setClaim("ROL" + i + "", user.getRoles().get(i));
 		}
 		claim.setIssuer(host);
 		claim.setIssueTime(DateTime.now().toDate());
 		claim.setExpirationTime(DateTime.now().plusHours(8).toDate());
+
+		JWSSigner signer = new MACSigner(TOKEN_SECRET);
+		SignedJWT jwt = new SignedJWT(JWT_HEADER, claim);
+		jwt.sign(signer);
+
+		return new Token(jwt.serialize());
+	}
+
+	public static Token createToken(String host, long sub) throws JOSEException {
+		JWTClaimsSet claim = new JWTClaimsSet();
+		claim.setSubject(Long.toString(sub));
+		claim.setIssuer(host);
+		claim.setIssueTime(DateTime.now().toDate());
+		claim.setExpirationTime(DateTime.now().plusDays(14).toDate());
 
 		JWSSigner signer = new MACSigner(TOKEN_SECRET);
 		SignedJWT jwt = new SignedJWT(JWT_HEADER, claim);

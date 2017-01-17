@@ -24,7 +24,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "cie10")
-@XmlRootElement
 public class CIE10 implements Serializable {
 
 	private static final long serialVersionUID = 1L;

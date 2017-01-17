@@ -1,11 +1,9 @@
 package com.osfe.ramenodb.authentication.api.resources;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Map;
 
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -34,7 +32,6 @@ import com.nimbusds.jose.JOSEException;
 import com.osfe.ramenodb.authentication.api.RamenodbConfiguration.ClientSecretsConfiguration;
 import com.osfe.ramenodb.authentication.api.auth.AuthUtils;
 import com.osfe.ramenodb.authentication.api.auth.PasswordService;
-import com.osfe.ramenodb.authentication.api.core.OpenLDAP;
 import com.osfe.ramenodb.authentication.api.core.Token;
 import com.osfe.ramenodb.authentication.api.core.User;
 import com.osfe.ramenodb.authentication.api.core.User.Provider;
@@ -52,299 +49,271 @@ import io.dropwizard.jersey.errors.ErrorMessage;
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthResource {
 
-	private final Client client;
-	private final RepoUser dao;
-	private final ClientSecretsConfiguration secrets;
+    private final Client client;
+    private final RepoUser dao;
+    private final ClientSecretsConfiguration secrets;
 
-	public static final String CLIENT_ID_KEY = "client_id", REDIRECT_URI_KEY = "redirect_uri",
-			CLIENT_SECRET = "client_secret", CODE_KEY = "code", GRANT_TYPE_KEY = "grant_type",
-			AUTH_CODE = "authorization_code";
+    public static final String CLIENT_ID_KEY = "client_id", REDIRECT_URI_KEY = "redirect_uri",
+            CLIENT_SECRET = "client_secret", CODE_KEY = "code", GRANT_TYPE_KEY = "grant_type",
+            AUTH_CODE = "authorization_code";
 
-	public static final String CONFLICT_MSG = "There is already a %s account that belongs to you",
-			NOT_FOUND_MSG = "User not found", LOGING_ERROR_MSG = "Wrong email and/or password",
-			UNLINK_ERROR_MSG = "Could not unlink %s account because it is your only sign-in method",
-			NEED_COMPANY_ACCOUNT_FIRST = "you must first authentificate with your company account to link Facebook";
+    public static final String CONFLICT_MSG = "There is already a %s account that belongs to you",
+            NOT_FOUND_MSG = "User not found", LOGING_ERROR_MSG = "Wrong email and/or password",
+            UNLINK_ERROR_MSG = "Could not unlink %s account because it is your only sign-in method";
 
-	public static final ObjectMapper MAPPER = new ObjectMapper();
+    public static final ObjectMapper MAPPER = new ObjectMapper();
 
-	public AuthResource(final Client client, final RepoUser dao, final ClientSecretsConfiguration secrets) {
-		this.client = client;
-		this.dao = dao;
-		this.secrets = secrets;
-	}
+    public AuthResource(final Client client, final RepoUser dao,
+                        final ClientSecretsConfiguration secrets) {
+        this.client = client;
+        this.dao = dao;
+        this.secrets = secrets;
+    }
 
-	@POST
+    @POST
     @Path("login")
     @UnitOfWork
     public Response login(@Valid final User user, @Context final HttpServletRequest request)
-            throws JOSEException, NamingException, URISyntaxException {
-        Optional<User> foundUser = dao.findUserByUsernameAndPassword(user.getUniqueName(), user.getPassword());
-        if (user == null || !foundUser.isPresent()) {
-            return Response.status(Status.UNAUTHORIZED).entity(new ErrorMessage(LOGING_ERROR_MSG)).build();
+            throws JOSEException {
+        final Optional<User> foundUser = dao.findByEmail(user.getEmail());
+        if (foundUser.isPresent()
+                && PasswordService.checkPassword(user.getPassword(), foundUser.get().getPassword())) {
+            final Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.get());
+            return Response.ok().entity(token).build();
         }
-        final Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.get());
-        return Response.ok().entity(token).header("roles", foundUser.get().getRoles().toString()).build();
+        return Response.status(Status.UNAUTHORIZED).entity(new ErrorMessage(LOGING_ERROR_MSG)).build();
     }
 
-	@POST
-	@Path("signup")
-	@UnitOfWork
-	public Response signup(@Valid final User user, @Context final HttpServletRequest request) throws JOSEException {
-		user.setPassword(PasswordService.hashPassword(user.getPassword()));
-		final User savedUser = dao.merge(user);
-		final Token token = AuthUtils.createToken(request.getRemoteHost(), savedUser);
-		return Response.status(Status.CREATED).entity(token).build();
-	}
+    @POST
+    @Path("signup")
+    @UnitOfWork
+    public Response signup(@Valid final User user, @Context final HttpServletRequest request)
+            throws JOSEException {
+        user.setPassword(PasswordService.hashPassword(user.getPassword()));
+        final User savedUser = dao.save(user);
+        final Token token = AuthUtils.createToken(request.getRemoteHost(), savedUser);
+        return Response.status(Status.CREATED).entity(token).build();
+    }
 
-	@POST
-	@Path("facebook")
-	@UnitOfWork
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response loginFacebook(@Valid final Payload payload, @Context final HttpServletRequest request)
-			throws JsonParseException, JsonMappingException, IOException, ParseException, JOSEException {
-		final String accessTokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token";
-		final String graphApiUrl = "https://graph.facebook.com/v2.3/me";
+    @POST
+    @Path("facebook")
+    @UnitOfWork
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response loginFacebook(@Valid final Payload payload,
+                                  @Context final HttpServletRequest request) throws JsonParseException, JsonMappingException,
+            IOException, ParseException, JOSEException {
+        final String accessTokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token";
+        final String graphApiUrl = "https://graph.facebook.com/v2.3/me";
 
-		Response response;
+        Response response;
 
-		// Step 1. Exchange authorization code for access token.
-		response = client.target(accessTokenUrl).queryParam(CLIENT_ID_KEY, payload.getClientId())
-				.queryParam(REDIRECT_URI_KEY, payload.getRedirectUri()).queryParam(CLIENT_SECRET, secrets.getFacebook())
-				.queryParam(CODE_KEY, payload.getCode()).request("text/plain").accept(MediaType.TEXT_PLAIN).get();
+        // Step 1. Exchange authorization code for access token.
 
-		Map<String, Object> responseEntity = getResponseEntity(response);
-		// Step 1. Exchange authorization code for access token.
-		response = client.target(graphApiUrl).queryParam("access_token", responseEntity.get("access_token"))
-				.queryParam("expires_in", responseEntity.get("expires_in")).request("text/plain").get();
+        response =
+                client.target(accessTokenUrl).queryParam(CLIENT_ID_KEY, payload.getClientId())
+                        .queryParam(REDIRECT_URI_KEY, payload.getRedirectUri())
+                        .queryParam(CLIENT_SECRET, secrets.getFacebook())
+                        .queryParam(CODE_KEY, payload.getCode()).request("text/plain")
+                        .accept(MediaType.TEXT_PLAIN).get();
 
-		final Map<String, Object> userInfo = getResponseEntity(response);
+        Map<String, Object> responseEntity = getResponseEntity(response);
 
-		// Step 3. Process the authenticated the user.
-		return processUser(request, Provider.FACEBOOK, userInfo.get("id").toString(), userInfo.get("name").toString());
-	}
+        response =
+                client.target(graphApiUrl).queryParam("access_token", responseEntity.get("access_token"))
+                        .queryParam("expires_in", responseEntity.get("expires_in")).request("text/plain").get();
 
-	@POST
-	@Path("google")
-	@UnitOfWork
-	public Response loginGoogle(@Valid final Payload payload, @Context final HttpServletRequest request)
-			throws JOSEException, ParseException, JsonParseException, JsonMappingException, IOException {
-		final String accessTokenUrl = "https://accounts.google.com/o/oauth2/token";
-		final String peopleApiUrl = "https://www.googleapis.com/plus/v1/people/me/openIdConnect";
-		Response response;
+        final Map<String, Object> userInfo = getResponseEntity(response);
 
-		// Step 1. Exchange authorization code for access token.
-		final MultivaluedMap<String, String> accessData = new MultivaluedHashMap<String, String>();
-		accessData.add(CLIENT_ID_KEY, payload.getClientId());
-		accessData.add(REDIRECT_URI_KEY, payload.getRedirectUri());
-		accessData.add(CLIENT_SECRET, secrets.getGoogle());
-		accessData.add(CODE_KEY, payload.getCode());
-		accessData.add(GRANT_TYPE_KEY, AUTH_CODE);
-		response = client.target(accessTokenUrl).request().post(Entity.form(accessData));
-		accessData.clear();
+        // Step 3. Process the authenticated the user.
+            return processUser(request, Provider.FACEBOOK, userInfo.get("id").toString(),
+                userInfo.get("name").toString());
+    }
 
-		// Step 2. Retrieve profile information about the current user.
-		final String accessToken = (String) getResponseEntity(response).get("access_token");
-		response = client.target(peopleApiUrl).request("text/plain")
-				.header(AuthUtils.AUTH_HEADER_KEY, String.format("Bearer %s", accessToken)).get();
-		final Map<String, Object> userInfo = getResponseEntity(response);
 
-		// Step 3. Process the authenticated the user.
-		return processUser(request, Provider.GOOGLE, userInfo.get("sub").toString(), userInfo.get("name").toString());
-	}
+    @POST
+    @Path("google")
+    @UnitOfWork
+    public Response loginGoogle(@Valid final Payload payload,
+                                @Context final HttpServletRequest request) throws JOSEException, ParseException,
+            JsonParseException, JsonMappingException, IOException {
+        final String accessTokenUrl = "https://accounts.google.com/o/oauth2/token";
+        final String peopleApiUrl = "https://www.googleapis.com/plus/v1/people/me/openIdConnect";
+        Response response;
 
-	@POST
-	@Path("linkedin")
-	@UnitOfWork
-	public Response loginLinkedin() {
-		return Response.ok().build();
-	}
+        // Step 1. Exchange authorization code for access token.
+        final MultivaluedMap<String, String> accessData = new MultivaluedHashMap<String, String>();
+        accessData.add(CLIENT_ID_KEY, payload.getClientId());
+        accessData.add(REDIRECT_URI_KEY, payload.getRedirectUri());
+        accessData.add(CLIENT_SECRET, secrets.getGoogle());
+        accessData.add(CODE_KEY, payload.getCode());
+        accessData.add(GRANT_TYPE_KEY, AUTH_CODE);
+        response = client.target(accessTokenUrl).request().post(Entity.form(accessData));
+        accessData.clear();
 
-	@POST
-	@Path("github")
-	@UnitOfWork
-	public Response loginGithub() {
-		return Response.ok().build();
-	}
+        // Step 2. Retrieve profile information about the current user.
+        final String accessToken = (String) getResponseEntity(response).get("access_token");
+        response =
+                client.target(peopleApiUrl).request("text/plain")
+                        .header(AuthUtils.AUTH_HEADER_KEY, String.format("Bearer %s", accessToken)).get();
+        final Map<String, Object> userInfo = getResponseEntity(response);
 
-	@POST
-	@Path("foursquare")
-	@UnitOfWork
-	public Response loginFoursquare() {
-		return Response.ok().build();
-	}
+        // Step 3. Process the authenticated the user.
+        return processUser(request, Provider.GOOGLE, userInfo.get("sub").toString(),
+                userInfo.get("name").toString());
+    }
 
-	@GET
-	@Path("twitter")
-	@UnitOfWork
-	public Response loginTwitter(@Context final HttpServletRequest request) {
-		return Response.ok().build();
-	}
+    @POST
+    @Path("linkedin")
+    @UnitOfWork
+    public Response loginLinkedin() {
+        return Response.ok().build();
+    }
 
-	@POST
-	@Path("unlink/")
-	@UnitOfWork
-	public Response unlink(@Valid final UnlinkRequest unlinkRequest, @Context final HttpServletRequest request)
-			throws ParseException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException,
-			SecurityException, JOSEException, NamingException {
-		final String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
-		final Optional<User> foundUser = dao.findByUniqueName(subject);
+    @POST
+    @Path("github")
+    @UnitOfWork
+    public Response loginGithub() {
+        return Response.ok().build();
+    }
 
-		String provider = unlinkRequest.provider;
+    @POST
+    @Path("foursquare")
+    @UnitOfWork
+    public Response loginFoursquare() {
+        return Response.ok().build();
+    }
 
-		if (!foundUser.isPresent()) {
-			return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NOT_FOUND_MSG)).build();
-		}
+    @GET
+    @Path("twitter")
+    @UnitOfWork
+    public Response loginTwitter(@Context final HttpServletRequest request) {
+        return Response.ok().build();
+    }
 
-		final User userToUnlink = foundUser.get();
 
-		// check that the user is not trying to unlink the only sign-in method
-		if (userToUnlink.getSignInMethodCount() == 1) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(new ErrorMessage(String.format(UNLINK_ERROR_MSG, provider))).build();
-		}
+    @POST
+    @Path("unlink/")
+    @UnitOfWork
+    public Response unlink(@Valid final UnlinkRequest unlinkRequest,
+                           @Context final HttpServletRequest request) throws ParseException, IllegalArgumentException,
+            IllegalAccessException, NoSuchFieldException, SecurityException, JOSEException {
+        final String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
+        final Optional<User> foundUser = dao.findById(Long.parseLong(subject));
 
-		try {
-			userToUnlink.setProviderId(Provider.valueOf(provider.toUpperCase()), null);
-		} catch (final IllegalArgumentException e) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
+        String provider = unlinkRequest.provider;
 
-		dao.merge(userToUnlink);
+        if (!foundUser.isPresent()) {
+            return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NOT_FOUND_MSG)).build();
+        }
 
-		return Response.ok().build();
-	}
+        final User userToUnlink = foundUser.get();
 
-	public static class UnlinkRequest {
+        // check that the user is not trying to unlink the only sign-in method
+        if (userToUnlink.getSignInMethodCount() == 1) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(new ErrorMessage(String.format(UNLINK_ERROR_MSG, provider))).build();
+        }
 
-		@NotBlank
-		String provider;
+        try {
+            userToUnlink.setProviderId(Provider.valueOf(provider.toUpperCase()), null);
+        } catch (final IllegalArgumentException e) {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
 
-		public String getProvider() {
-			return provider;
-		}
+        dao.save(userToUnlink);
 
-		public void setProvider(String provider) {
-			this.provider = provider;
-		}
+        return Response.ok().build();
+    }
 
-	}
 
-	/*
-	 * Inner classes for entity wrappers
-	 */
-	public static class Payload {
+    public static class UnlinkRequest {
+        @NotBlank
+        String provider;
 
-		@NotBlank
-		String clientId;
+        public String getProvider() {
+            return provider;
+        }
 
-		@NotBlank
-		String redirectUri;
+        public void setProvider(String provider) {
+            this.provider = provider;
+        }
 
-		@NotBlank
-		String code;
+    }
 
-		public String getClientId() {
-			return clientId;
-		}
+    /*
+     * Inner classes for entity wrappers
+     */
+    public static class Payload {
+        @NotBlank
+        String clientId;
 
-		public String getRedirectUri() {
-			return redirectUri;
-		}
+        @NotBlank
+        String redirectUri;
 
-		public String getCode() {
-			return code;
-		}
-	}
+        @NotBlank
+        String code;
 
-	/*
-	 * Helper methods
-	 */
-	private Map<String, Object> getResponseEntity(final Response response)
-			throws JsonParseException, JsonMappingException, IOException {
-		return MAPPER.readValue(response.readEntity(String.class), new TypeReference<Map<String, Object>>() {
-		});
-	}
+        public String getClientId() {
+            return clientId;
+        }
 
-	//	private Response processUser(final HttpServletRequest request, final Provider provider, final String id,
-	//			final String displayName) throws JOSEException, ParseException {
-	//
-	//		final Optional<User> providerUser = dao.findByProvider(provider, id);
-	////		Optional<User> ldapUser = null;
-	//		// Step 3a. If user is already signed in then link accounts.
-	//		User userToSave;
-	//		if (StringUtils.isNotBlank(request.getHeader(AuthUtils.AUTH_HEADER_KEY))) {
-	//			String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
-	////			ldapUser = OpenLDAP.returnDefaultUser();
-	//
-	//			if (providerUser.isPresent()) {
-	//				return Response.status(Status.CONFLICT)
-	//						.entity(new ErrorMessage(String.format(CONFLICT_MSG, provider.capitalize()))).build();
-	//			}
-	////			if (!ldapUser.isPresent()) {
-	////				return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NOT_FOUND_MSG)).build();
-	////			}
-	//			userToSave = dao.findByUniqueName(displayName).get();
-	//			// userToSave.setUniqueName(ldapUser.get().getUniqueName());
-	//			userToSave.setProviderId(provider, id);
-	//			// userToSave.setEmail(user.get().getEmail());
-	//			if (userToSave.getDisplayName() == null) {
-	//				userToSave.setDisplayName(displayName);
-	//			}
-	//			userToSave = dao.merge(userToSave);
-	//		} else {
-	//			// Step 3b. Create a new user account or return an existing one.
-	//
-	//			// if (user.isPresent()) {
-	//			// userToSave = user.get();
-	//			// } else {
-	//			// userToSave = new User();
-	//			// userToSave = ldapUser.get();
-	//			// userToSave.setUniqueName(ldapUser.get().getUniqueName());
-	//			// userToSave.setProviderId(provider, id);
-	//			// userToSave.setDisplayName(displayName);
-	//			// userToSave = dao.merge(userToSave);
-	//			return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NEED_COMPANY_ACCOUNT_FIRST)).build();
-	//		}
-	//		final Token token = AuthUtils.createToken(request.getRemoteHost(), userToSave);
-	//		return Response.ok().entity(token).build();
-	//	}
+        public String getRedirectUri() {
+            return redirectUri;
+        }
 
-	private Response processUser(final HttpServletRequest request, final Provider provider, final String id,
-			final String displayName) throws JOSEException, ParseException {
+        public String getCode() {
+            return code;
+        }
+    }
 
-		final Optional<User> providerUser = dao.findByProvider(provider, id);
-		User userToSave = null;
-		
-		// Step 3a. If user is already signed in then link accounts.		
-		if (StringUtils.isNotBlank(request.getHeader(AuthUtils.AUTH_HEADER_KEY))) {
-			String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
+    /*
+     * Helper methods
+     */
+    private Map<String, Object> getResponseEntity(final Response response) throws JsonParseException,
+            JsonMappingException, IOException {
+        return MAPPER.readValue(response.readEntity(String.class),
+                new TypeReference<Map<String, Object>>() {});
+    }
 
-			if (providerUser.isPresent()) {
-				return Response.status(Status.CONFLICT)
-						.entity(new ErrorMessage(String.format(CONFLICT_MSG, provider.capitalize()))).build();
-			}
-			userToSave = dao.findByUniqueName(subject).get();
-			//          userToSave.setUniqueName(ldapUser.get().getUniqueName());
-			userToSave.setProviderId(provider, id);
-			//        userToSave.setEmail(user.get().getEmail());
-			if (userToSave.getDisplayName() == null) {
-				userToSave.setDisplayName(displayName);
-			}
-			userToSave = dao.merge(userToSave);
-		} else {
-			// Step 3b. Create a new user account or return an existing one.
-			if (!providerUser.isPresent()) {
-				userToSave = new User(displayName);
-				userToSave.setDisplayName(displayName);
-				userToSave.setProviderId(provider, id); 
-				userToSave = dao.merge(userToSave);
-			} else{ 
-				return Response.status(Status.CONFLICT)
-						.entity(new ErrorMessage(String.format(CONFLICT_MSG, provider.capitalize()))).build();
-			}
-			//			return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NEED_COMPANY_ACCOUNT_FIRST)).build();
-		}
-		final Token token = AuthUtils.createToken(request.getRemoteHost(), userToSave);
-		return Response.ok().entity(token).build();
-	}
+    private Response processUser(final HttpServletRequest request, final Provider provider,
+                                 final String id, final String displayName) throws JOSEException, ParseException {
+        final Optional<User> user = dao.findByProvider(provider, id);
+
+        // Step 3a. If user is already signed in then link accounts.
+        User userToSave;
+        final String authHeader = request.getHeader(AuthUtils.AUTH_HEADER_KEY);
+        if (StringUtils.isNotBlank(authHeader)) {
+            if (user.isPresent()) {
+                return Response.status(Status.CONFLICT)
+                        .entity(new ErrorMessage(String.format(CONFLICT_MSG, provider.capitalize()))).build();
+            }
+
+            final String subject = AuthUtils.getSubject(authHeader);
+            final Optional<User> foundUser = dao.findById(Long.parseLong(subject));
+            if (!foundUser.isPresent()) {
+                return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NOT_FOUND_MSG)).build();
+            }
+
+            userToSave = foundUser.get();
+            userToSave.setProviderId(provider, id);
+            if (userToSave.getDisplayName() == null) {
+                userToSave.setDisplayName(displayName);
+            }
+            userToSave = dao.save(userToSave);
+        } else {
+            // Step 3b. Create a new user account or return an existing one.
+            if (user.isPresent()) {
+                userToSave = user.get();
+            } else {
+                userToSave = new User();
+                userToSave.setProviderId(provider, id);
+                userToSave.setDisplayName(displayName);
+                userToSave = dao.save(userToSave);
+            }
+        }
+
+        final Token token = AuthUtils.createToken(request.getRemoteHost(), userToSave);
+        return Response.ok().entity(token).build();
+    }
 }
+

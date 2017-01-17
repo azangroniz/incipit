@@ -8,12 +8,14 @@ import javax.persistence.FieldResult;
 import javax.persistence.Id;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author jmfabiano
  */
 @Entity
+@XmlRootElement
 @Table(name = "XXX_carga")
 @SqlResultSetMapping(name = "cargaMapping", entities = { @EntityResult(entityClass = Pendiente.class, fields = {
 		@FieldResult(name = "id", column = "id"), @FieldResult(name = "afiliadoNombre", column = "afiliadoNombre"),

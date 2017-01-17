@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -22,6 +23,7 @@ import javax.persistence.Temporal;
  */
 @Entity
 @Table(name = "XXX_repo")
+@XmlRootElement
 @SqlResultSetMapping(name = "reporteMApping", entities = { @EntityResult(entityClass = Reporte.class, fields = {
 		@FieldResult(name = "id", column = "id"), @FieldResult(name = "afiliadoNombre", column = "afiliadoNombre"),
 		@FieldResult(name = "afiliadoApellido", column = "afiliadoApellido"),

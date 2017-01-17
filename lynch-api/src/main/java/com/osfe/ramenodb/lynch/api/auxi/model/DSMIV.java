@@ -24,7 +24,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "dsmviv")
-@XmlRootElement
 public class DSMIV implements Serializable {
 
 	private static final long serialVersionUID = 1L;

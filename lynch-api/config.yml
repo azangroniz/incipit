@@ -23,16 +23,16 @@ databaseMySQL:
   user: root
 
   # the password
-  password: sqlosfe
+  password: toor
 
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/lynch
+  url: jdbc:mysql://localhost:3306/incipit
 
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
     hibernate.dialect: org.hibernate.dialect.MySQLDialect
-    hibernate.hbm2dl.auto: create
+    hibernate.hbm2ddl.auto: create
     hibernate.generate_statistics: true
     hibernate.show_sql: true
     hibernate.format_sql: true
@@ -45,38 +45,38 @@ databaseAuth:
   user: root
 
   # the password
-  password: sqlosfe
+  password: toor
   
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/ramendb
+  url: jdbc:mysql://localhost:3306/incipit
 
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
     hibernate.dialect: org.hibernate.dialect.MySQLDialect
-    #hibernate.hbm2dl.auto: create
+    hibernate.hbm2ddl.auto: create
     hibernate.generate_statistics: true
     hibernate.show_sql: true
     hibernate.format_sql: true
     
 databaseSQLServer:
   # the name of your JDBC driver
-  driverClass: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  driverClass: org.gjt.mm.mysql.Driver
 
   # the username
-  user: sigos
+  user: root
 
   # the password
-  password: sigos
+  password: toor
 
   # the JDBC URL
-  url: jdbc:sqlserver://P-SVR-DATA;databaseName=gecros
+  url: jdbc:mysql://localhost:3306/incipit
 
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
-    hibernate.dialect: org.hibernate.dialect.SQLServerDialect
-    #hibernate.hbm2dl.auto: create
+    hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    hibernate.hbm2ddl.auto: create
     hibernate.generate_statistics: true
     hibernate.show_sql: true
     hibernate.format_sql: true

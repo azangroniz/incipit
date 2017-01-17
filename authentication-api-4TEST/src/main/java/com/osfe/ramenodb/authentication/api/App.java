@@ -74,6 +74,6 @@ public class App extends Application<RamenodbConfiguration> {
 		filter.setInitParameter(CrossOriginFilter.ALLOW_CREDENTIALS_PARAM, "true");
 
 		environment.jersey()
-				.register(AuthFactory.binder(new OAuthFactory<User>(new SimpleAuthenticator(), "bearer", User.class)));
+				.register(AuthFactory.binder(new OAuthFactory<User>(new SimpleAuthenticator(dao), "bearer", User.class)));
 	}
 }

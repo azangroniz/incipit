@@ -2,7 +2,7 @@ server:
   type: simple
   connector:
     type: http
-    port: 3000
+    port: 3001
   applicationContextPath: /
     
 # Logging settings.
@@ -26,13 +26,13 @@ database:
   password: toor
 
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/ramendb
+  url: jdbc:mysql://localhost:3306/incipit
 
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
     hibernate.dialect: org.hibernate.dialect.MySQLDialect
-    hibernate.hbm2dl.auto: create
+    hibernate.hbm2ddl.auto: update
     hibernate.generate_statistics: true
     hibernate.show_sql: true
     hibernate.format_sql: true

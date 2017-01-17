@@ -13,7 +13,6 @@ com\osfe\ramenodb\authentication\api\db\RepoUser.class
 com\osfe\ramenodb\authentication\api\resources\AuthResource$Payload.class
 com\osfe\ramenodb\authentication\api\resources\AuthResource$UnlinkRequest.class
 com\osfe\ramenodb\authentication\api\resources\UserResource.class
-com\osfe\ramenodb\authentication\api\core\OpenLDAP.class
 com\osfe\ramenodb\authentication\api\App.class
 com\osfe\ramenodb\authentication\api\db\GenericRepo.class
 com\osfe\ramenodb\authentication\api\App$1.class
