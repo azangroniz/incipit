@@ -1,13 +1,14 @@
+'use strict';
+
 module.exports = function(grunt){
-	var assets = 'src/main/resources/assets/';
+	var assets = 'src/main/resources/assets';
 	var dist = 'src/main/resources/assets/dist';
-	var watchFiles = {
-		serverViews: ['app/views/**/*.*'], 
+	var watchFiles = {		
 		serverJS: ['gruntfile.js'],
-		clientViews: ['modules/**/views/*.html','modules/**/img/**'],
-		clientJS: [ 'modules/**/*.js', 'js/*.js'],
-		clientCSS: ['css/*css', assets +'modules/**/*.css']
-	};
+		clientViews: ['modules/**/views/*.html','modules/**/img/**', 'index.html' ],
+		clientJS: ['modules/**/*.js', 'js/*.js'],
+		clientCSS: ['modules/**/*.css','css/*css']
+	}; 
 	grunt.initConfig({
 		pkg:grunt.file.readJSON('package.json'),
 		watch: {
@@ -21,12 +22,6 @@ module.exports = function(grunt){
 					spawn: false
 				}
 			},
-			serverViews: {
-				files: watchFiles.serverViews,
-				options: {
-					livereload: true
-				}
-			},
 			serverJS: {
 				files: watchFiles.serverJS,
 				tasks: ['jshint'],
@@ -37,8 +32,9 @@ module.exports = function(grunt){
 			clientViews: {
 				files: watchFiles.clientViews,
 				options: {
-					livereload: true,
-				}
+					livereload: true,		
+					cwd: 'src/main/resources/assets'
+				}				
 			},
 			clientJS: {
 				files: watchFiles.clientJS,
@@ -49,7 +45,6 @@ module.exports = function(grunt){
 			},
 			clientCSS: {
 				files: watchFiles.clientCSS,
-				tasks: ['csslint'],
 				options: {
 					livereload: true
 				}
@@ -59,8 +54,7 @@ module.exports = function(grunt){
 			options: {
 			},
 			dev: {
-				options: {
-					port:4000,
+				options: {					
 					script: 'server.js'
 				}
 			}
@@ -69,7 +63,7 @@ module.exports = function(grunt){
 			all: {
 				src: watchFiles.clientJS.concat(watchFiles.serverJS),
 				options: {
-					jshintrc: false
+					jshintrc: true
 				}
 			}
 		},
@@ -82,39 +76,38 @@ module.exports = function(grunt){
 			},				
 			ViewerJS: {
 				expand: true,
-				cwd: assets + '/app',
+				cwd: assets ,
 				src: [watchFiles.clientJS],
 				dest: dist
 			},
 			ViewerCSS:{
 				expand: true,
-				cwd: assets + '/app',
+				cwd: assets,
 				src: [watchFiles.clientCSS],
 				dest: dist
 			},
 			copybower:{
 				expand: true,
-				cwd: assets ,
 				src: ['bower_components/**'],
-				dest: dist
+				dest: assets
 			}
 		},
 		clean: [dist],		
-		includeSource: {
+		includeSource: {		
 			options: {
-				basePath:[ dist + '/css', dist + '/js'],	
-				baseUrl: 'dist/js/'			
-			},
+				basePath:[assets],	
+				baseUrl: 'assets/'			
+			},			
 			myTarget: {
 				files: {
-					'src/main/resources/assets/dist/index.html': 'src/main/resources/assets/app/index.tpl.html'
+					'src/main/resources/assets/index.html': 'src/main/resources/assets/index.tpl.html'
 				}
 			}
 		},
-		bowerInstall: {			
+		bowerInstall: {		
 			target: {
-				src: 'src/main/resources/assets/dist/index.html'  ,
 				cwd: assets,
+				src: 'src/main/resources/assets/index.html'
 			}
 		}			
 	});	
@@ -124,10 +117,8 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-include-source');
 	grunt.loadNpmTasks('grunt-bower-install');
+	// grunt.loadNpmTasks('grunt-express');
 	grunt.loadNpmTasks('grunt-express-server');
-	// grunt.registerTask('build',['clean','copy','includeSource','bowerInstall']);
-	// grunt.registerTask('default',['build','watch']);
-	grunt.registerTask('default',['watch']);
-	grunt.registerTask('server', [ 'express:dev', 'watch' ])
-
-}
+	grunt.registerTask('build',['clean','jshint','includeSource','bowerInstall','copy']);
+	grunt.registerTask('default', [ 'express:dev', 'watch' ]);
+};

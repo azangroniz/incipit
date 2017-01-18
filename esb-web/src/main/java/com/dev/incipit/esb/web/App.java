@@ -24,13 +24,13 @@ public class App extends Application<RamenodbConfiguration> {
 
     @Override
     public String getName() {
-        return "RamenWeb";
+        return "esb-Web";
     }
 
     @Override
     public void initialize(final Bootstrap<RamenodbConfiguration> bootstrap) {
         DateTimeZone.setDefault(DateTimeZone.UTC);
-        bootstrap.addBundle(new ConfiguredAssetsBundle("/assets/dist" , "/dist/"));
+        bootstrap.addBundle(new ConfiguredAssetsBundle("/assets/"));
     }
 
     @Override
