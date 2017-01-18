@@ -18,8 +18,12 @@
     "grunt-contrib-less": "^1.4.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-express": "^1.4.1",
+    "grunt-express-server": "^0.5.3",
     "grunt-include-source": "^1.0.0",
     "grunt-parallel": "^0.5.1",
     "jshint": "^2.9.4"
+  },
+  "dependencies": {
+    "express": "^4.14.0"
   }
 }

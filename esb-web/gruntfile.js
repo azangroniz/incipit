@@ -11,6 +11,16 @@ module.exports = function(grunt){
 	grunt.initConfig({
 		pkg:grunt.file.readJSON('package.json'),
 		watch: {
+			options: {
+				livereload: true,
+			},
+			express: {
+				files:  [ 'server.js' ],
+				tasks:  [ 'express:dev' ],
+				options: {
+					spawn: false
+				}
+			},
 			serverViews: {
 				files: watchFiles.serverViews,
 				options: {
@@ -45,6 +55,16 @@ module.exports = function(grunt){
 				}
 			}
 		},
+		express: {
+			options: {
+			},
+			dev: {
+				options: {
+					port:4000,
+					script: 'server.js'
+				}
+			}
+		},
 		jshint: {
 			all: {
 				src: watchFiles.clientJS.concat(watchFiles.serverJS),
@@ -72,7 +92,7 @@ module.exports = function(grunt){
 				src: [watchFiles.clientCSS],
 				dest: dist
 			},
-			bopybower:{
+			copybower:{
 				expand: true,
 				cwd: assets ,
 				src: ['bower_components/**'],
@@ -96,17 +116,7 @@ module.exports = function(grunt){
 				src: 'src/main/resources/assets/dist/index.html'  ,
 				cwd: assets,
 			}
-		},
-		express:{
-			all:{
-				options:{
-					port:9000,
-					hostname:'localhost',
-					bases:['.'],
-					livereload:true
-				}
-			}
-		}		
+		}			
 	});	
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-copy');
@@ -114,8 +124,10 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-include-source');
 	grunt.loadNpmTasks('grunt-bower-install');
-	grunt.loadNpmTasks('grunt-express');
-	grunt.registerTask('build',['clean','copy','includeSource','bowerInstall']);
-	grunt.registerTask('default',['build','express','watch']);
+	grunt.loadNpmTasks('grunt-express-server');
+	// grunt.registerTask('build',['clean','copy','includeSource','bowerInstall']);
+	// grunt.registerTask('default',['build','watch']);
+	grunt.registerTask('default',['watch']);
+	grunt.registerTask('server', [ 'express:dev', 'watch' ])
 
 }
