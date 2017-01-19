@@ -4,11 +4,11 @@ angular.module('RamenApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', '
       .state('home', {
         url: '/',
         controller: 'HomeCtrl',
-        templateUrl: '/assets/modules/main/views/home.html'
+        templateUrl: '/modules/main/views/home.html'
       })
       .state('login', {
         url: '/login',
-        templateUrl: '/assets/partials/login.html',
+        templateUrl: '/modules/main/views/login.html',
         controller: 'LoginCtrl',
         resolve: {
           skipIfLoggedIn: skipIfLoggedIn
@@ -16,7 +16,7 @@ angular.module('RamenApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', '
       })
       .state('signup', {
         url: '/signup',
-        templateUrl: '/assets/partials/signup.html',
+        templateUrl: '/modules/main/views/signup.html',
         controller: 'SignupCtrl',
         resolve: {
           skipIfLoggedIn: skipIfLoggedIn
@@ -29,7 +29,7 @@ angular.module('RamenApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', '
       })
       .state('profile', {
         url: '/profile',
-        templateUrl: '/assets/partials/profile.html',
+        templateUrl: '/modules/main/views/profile.html',
         controller: 'ProfileCtrl',
         resolve: {
           loginRequired: loginRequired
@@ -37,7 +37,7 @@ angular.module('RamenApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', '
       })
       .state('Admission', {
         url: '/Admission',
-        templateUrl: '/assets/partials/admission.html',
+        templateUrl: '/modules/main/views/admission.html',
         controller: 'AdmissionController',
         resolve: {
           loginRequired: loginRequired
@@ -45,7 +45,7 @@ angular.module('RamenApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', '
       })
       .state('MedicalCare', {
         url: '/MedicalCare',
-        templateUrl: '/assets/partials/medical-care.html',
+        templateUrl: '/modules/main/views/medical-care.html',
         controller: 'MedicalCareController',
         resolve: {
           loginRequired: loginRequired
@@ -53,7 +53,7 @@ angular.module('RamenApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', '
       })
       .state('Reports', {
         url: '/Reports',
-        templateUrl: '/assets/partials/reportes.html',
+        templateUrl: '/modules/main/views/reportes.html',
         controller: 'ReportsController',
         resolve: {
           loginRequired: loginRequired
@@ -61,7 +61,7 @@ angular.module('RamenApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', '
       })
       .state('AddProfesional', {
         url: '/AddProfesional',
-        templateUrl: '/assets/partials/agregar-profesional.html',
+        templateUrl: '/modules/main/views/agregar-profesional.html',
         controller: 'ProfesionalController',
         resolve: {
           loginRequired: loginRequired

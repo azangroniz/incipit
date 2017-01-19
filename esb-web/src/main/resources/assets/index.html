@@ -4,9 +4,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Osfe</title>   
-    <link href="assets/css/angular-toastr.css" rel="stylesheet" type="text/css">
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="assets/css/styles.css" rel="stylesheet" type="text/css">
+    <!-- bower:css -->
+    <link rel="stylesheet" href="lib/angular-toastr/dist/angular-toastr.css" />
+    <link rel="stylesheet" href="lib/Ionicons/css/ionicons.css" />
+    <!-- endbower -->
+    <link href="css/angular-toastr.css" rel="stylesheet" type="text/css">
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
   </head>
   <body>     
     <div ng-controller="NavbarCtrl" class="navbar navbar-default navbar-static-top">
@@ -25,38 +29,38 @@
         <li><a href="/#/logout">Logout</a></li>
       </ul>
     </div>
-
+  
     <div ui-view>                
     </div>
-
+     
 
     <!-- bower:js -->
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-toastr/dist/angular-toastr.tpls.js"></script>
-    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <script src="bower_components/bootstrap-validator/dist/validator.js"></script>
-    <script src="bower_components/bootstrap3-typeahead/bootstrap3-typeahead.js"></script>
-    <script src="bower_components/file-saver.js/FileSaver.js"></script>
-    <script src="bower_components/ng-file-upload/ng-file-upload.js"></script>
-    <script src="bower_components/satellizer/dist/satellizer.js"></script>
+    <script src="lib/jquery/dist/jquery.js"></script>
+    <script src="lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-toastr/dist/angular-toastr.tpls.js"></script>
+    <script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="lib/bootstrap-validator/dist/validator.js"></script>
+    <script src="lib/bootstrap3-typeahead/bootstrap3-typeahead.js"></script>
+    <script src="lib/file-saver.js/FileSaver.js"></script>
+    <script src="lib/ng-file-upload/ng-file-upload.js"></script>
+    <script src="lib/satellizer/dist/satellizer.js"></script>
     <!-- endbower -->
 
 
-    <script src="assets/js/angular-animate.js"></script>
-    <script src="assets/js/angular-messages.js"></script>
-    <script src="assets/js/angular-mocks.js"></script>
-    <script src="assets/js/angular-resource.js"></script>
-    <script src="assets/js/angular-sanitize.js"></script>
-    <script src="assets/js/angular-ui-router.js"></script>
-    <script src="assets/js/app.js"></script>
-    <script src="assets/js/ngEnter.js"></script>
-    <script src="assets/js/onlyNumbers.js"></script>
-    <script src="assets/js/ownermodal.js"></script>
-    <script src="assets/js/passwordMatch.js"></script>
-    <script src="assets/js/passwordStrength.js"></script>
-   
+    <script src="js/angular-animate.js"></script>
+    <script src="js/angular-messages.js"></script>
+    <script src="js/angular-mocks.js"></script>
+    <script src="js/angular-resource.js"></script>
+    <script src="js/angular-sanitize.js"></script>
+    <script src="js/angular-ui-router.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/ngEnter.js"></script>
+    <script src="js/onlyNumbers.js"></script>
+    <script src="js/ownermodal.js"></script>
+    <script src="js/passwordMatch.js"></script>
+    <script src="js/passwordStrength.js"></script>
+    
 
 
   </body>

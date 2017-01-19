@@ -18,7 +18,7 @@ public class ClientResource {
 
 	@GET
 	public Response getPage() throws IOException {
-		URL clientPage = Resources.getResource("assets/dist/index.html");
+		URL clientPage = Resources.getResource("assets/index.html");
 		return Response.ok(Resources.toString(clientPage, Charsets.UTF_8)).build();
 	}
 

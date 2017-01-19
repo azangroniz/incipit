@@ -30,7 +30,7 @@ public class App extends Application<RamenodbConfiguration> {
     @Override
     public void initialize(final Bootstrap<RamenodbConfiguration> bootstrap) {
         DateTimeZone.setDefault(DateTimeZone.UTC);
-        bootstrap.addBundle(new ConfiguredAssetsBundle("/assets/"));
+        bootstrap.addBundle(new ConfiguredAssetsBundle());
     }
 
     @Override

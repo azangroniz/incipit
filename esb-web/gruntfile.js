@@ -16,7 +16,7 @@ module.exports = function(grunt){
 				livereload: true,
 			},
 			express: {
-				files:  [ 'server.js' ],
+				files:  [ 'server.js' , 'gruntfile.js'],
 				tasks:  [ 'express:dev' ],
 				options: {
 					spawn: false
@@ -26,36 +26,38 @@ module.exports = function(grunt){
 				files: watchFiles.serverJS,
 				tasks: ['jshint'],
 				options: {
-					livereload: true
+					livereload: true,
+					cwd: assets
 				}
 			},
 			clientViews: {
 				files: watchFiles.clientViews,
 				options: {
 					livereload: true,		
-					cwd: 'src/main/resources/assets'
+					cwd: assets
 				}				
 			},
 			clientJS: {
 				files: watchFiles.clientJS,
 				tasks: ['jshint'],
 				options: {
-					livereload: true
+					livereload: true,
+					cwd: assets
 				}
 			},
 			clientCSS: {
 				files: watchFiles.clientCSS,
 				options: {
-					livereload: true
+					livereload: true,
+					cwd: assets
 				}
 			}
 		},
 		express: {
-			options: {
-			},
 			dev: {
 				options: {					
-					script: 'server.js'
+					script: 'server.js',
+					livereload: true
 				}
 			}
 		},
@@ -88,15 +90,16 @@ module.exports = function(grunt){
 			},
 			copybower:{
 				expand: true,
+				cwd: assets,
 				src: ['bower_components/**'],
-				dest: assets
+				dest: dist
 			}
 		},
 		clean: [dist],		
 		includeSource: {		
 			options: {
 				basePath:[assets],	
-				baseUrl: 'assets/'			
+				baseUrl: ''			
 			},			
 			myTarget: {
 				files: {
@@ -106,7 +109,7 @@ module.exports = function(grunt){
 		},
 		bowerInstall: {		
 			target: {
-				cwd: assets,
+				cwd: '',
 				src: 'src/main/resources/assets/index.html'
 			}
 		}			
@@ -117,8 +120,7 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-include-source');
 	grunt.loadNpmTasks('grunt-bower-install');
-	// grunt.loadNpmTasks('grunt-express');
 	grunt.loadNpmTasks('grunt-express-server');
 	grunt.registerTask('build',['clean','jshint','includeSource','bowerInstall','copy']);
-	grunt.registerTask('default', [ 'express:dev', 'watch' ]);
-};
+	grunt.registerTask('server', [ 'express:dev', 'watch' ]);
+}; 
