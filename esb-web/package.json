@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "client-side app",
   "scripts": {
-    "install": "bower install ",
+    "install": "bower install --config.interactive=true",
     "postinstall": "grunt build"
   },
   "author": "jose maria fabiano",

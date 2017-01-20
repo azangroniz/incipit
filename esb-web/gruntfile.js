@@ -98,7 +98,7 @@ module.exports = function(grunt){
 		clean: [dist],		
 		includeSource: {		
 			options: {
-				basePath:[assets],	
+				basePath:[assets , assets +'/'+ watchFiles.clientJS],	
 				baseUrl: ''			
 			},			
 			myTarget: {
@@ -112,6 +112,23 @@ module.exports = function(grunt){
 				cwd: '',
 				src: 'src/main/resources/assets/index.html'
 			}
+		},
+		'bower-install-simple': {
+			clean: 'src/main/resources/assets/lib',
+			options: {
+				color: true,
+				directory: 'src/main/resources/assets/lib'
+			},
+			'prod': {
+				options: {
+					production: true
+				}
+			},
+			'dev': {
+				options: {
+					production: false
+				}
+			}
 		}			
 	});	
 	grunt.loadNpmTasks('grunt-contrib-watch');
@@ -120,7 +137,9 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-include-source');
 	grunt.loadNpmTasks('grunt-bower-install');
+	grunt.loadNpmTasks('grunt-bower-install-simple');
 	grunt.loadNpmTasks('grunt-express-server');
+	grunt.registerTask('reBower',['bower-install-simple:dev']);
 	grunt.registerTask('build',['clean','jshint','includeSource','bowerInstall','copy']);
 	grunt.registerTask('server', [ 'express:dev', 'watch' ]);
 }; 
