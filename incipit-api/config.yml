@@ -1,0 +1,83 @@
+server:
+  type: simple
+  connector:
+    type: http
+    port: 3300
+  applicationContextPath: /
+
+# Logging settings.
+logging:
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: ERROR,WARN,INFO
+  # Logger-specific levels.
+  loggers:
+    org.hibernate.SQL: ALL
+  appenders:
+    - type: console 
+
+databaseMySQL:
+  # the name of your JDBC driver
+  driverClass: org.gjt.mm.mysql.Driver
+
+  # the username
+  user: root
+
+  # the password
+  password: toor
+
+  # the JDBC URL
+  url: jdbc:mysql://localhost:3306/incipit
+
+  # any properties specific to your JDBC driver:
+  properties:
+    charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    hibernate.hbm2ddl.auto: create
+    hibernate.generate_statistics: true
+    hibernate.show_sql: true
+    hibernate.format_sql: true
+    
+databaseAuth:
+  # the name of your JDBC driver
+  driverClass: org.gjt.mm.mysql.Driver
+
+  # the username
+  user: root
+
+  # the password
+  password: toor
+  
+  # the JDBC URL
+  url: jdbc:mysql://localhost:3306/incipit
+
+  # any properties specific to your JDBC driver:
+  properties:
+    charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    hibernate.hbm2ddl.auto: create
+    hibernate.generate_statistics: true
+    hibernate.show_sql: true
+    hibernate.format_sql: true
+    
+databaseSQLServer:
+  # the name of your JDBC driver
+  driverClass: org.gjt.mm.mysql.Driver
+
+  # the username
+  user: root
+
+  # the password
+  password: toor
+
+  # the JDBC URL
+  url: jdbc:mysql://localhost:3306/incipit
+
+  # any properties specific to your JDBC driver:
+  properties:
+    charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    hibernate.hbm2ddl.auto: create
+    hibernate.generate_statistics: true
+    hibernate.show_sql: true
+    hibernate.format_sql: true
+

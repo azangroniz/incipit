@@ -1,0 +1,48 @@
+server:
+  type: simple
+  connector:
+    type: http
+    port: 3001
+  applicationContextPath: /
+    
+# Logging settings.
+logging:
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: ERROR,WARN,INFO
+  # Logger-specific levels.
+  loggers:
+    org.hibernate.SQL: ALL
+  appenders:
+    - type: console   
+    
+database:
+  # the name of your JDBC driver
+  driverClass: org.gjt.mm.mysql.Driver
+
+  # the username
+  user: root
+
+  # the password
+  password: toor
+
+  # the JDBC URL
+  url: jdbc:mysql://localhost:3306/incipit
+
+  # any properties specific to your JDBC driver:
+  properties:
+    charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    hibernate.hbm2ddl.auto: update
+    hibernate.generate_statistics: true
+    hibernate.show_sql: true
+    hibernate.format_sql: true
+
+clientSecrets:
+    facebook: f17dd0df27c2d7ab6c5192d5de132d92
+    #facebook: 298fb6c080fda239b809ae418bf49700
+    google: xGxxgKAObIRUwOKycySkL9Fi
+    linkedin: Linkedin Client Secret
+    github: Github Client Secret
+    foursquare: Foursquare Secret
+    twitter: Twitter Consumer Key
+    
