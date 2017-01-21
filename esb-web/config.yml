@@ -1,0 +1,21 @@
+server:
+  type: simple
+  connector:
+    type: http
+    port: 3400
+  applicationContextPath: /
+
+assets:
+  overrides:
+    # Override requests to /dashboard/${1} to instead look in
+    # ${working directory}/src/main/resources/assets/${1}
+    /: src/main/resources/assets/
+    # Logging settings.
+logging:
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: ERROR,WARN,INFO
+  # Logger-specific levels.
+  loggers:
+    org.hibernate.SQL: ALL
+  appenders:
+    - type: console 
